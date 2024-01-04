@@ -30,7 +30,7 @@ object DynVerPlugin extends AutoPlugin {
   }
   import autoImport._
 
-  override def buildSettings = Seq(
+  override def projectSettings = Seq(
     version := getVersion.value(dynverCurrentDate.value, dynverGitDescribeOutput.value),
     dynver  := getVersion.value(new Date, dynverInstance.value.getGitDescribeOutput(new Date)),
 

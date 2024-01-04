@@ -1,3 +1,4 @@
+
 val dynverRoot = project.in(file("."))
 aggregateProjects(dynverLib, sbtdynver)
 
@@ -72,6 +73,8 @@ val sbtdynver = project.dependsOn(dynverLib).enablePlugins(SbtPlugin).settings(
 
 lazy val publishSettings = Def.settings(
   MimaSettings.mimaSettings,
+  publishTo := Some("sbt-dev" at "https://tubins.jfrog.io/tubins/sbt-dev"),
+  credentials += Credentials(Path.userHome / ".artifactory" / "credentials"),
 )
 
 mimaPreviousArtifacts := Set.empty
