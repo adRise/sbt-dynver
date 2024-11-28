@@ -2,9 +2,9 @@
 val dynverRoot = project.in(file("."))
 aggregateProjects(dynverLib, sbtdynver)
 
-lazy val scala2_12 = "2.12.18"
-lazy val scala2_13 = "2.13.12"
-lazy val scala3    = "3.3.1"
+lazy val scala2_12 = "2.12.20"
+lazy val scala2_13 = "2.13.15"
+lazy val scala3    = "3.3.4"
 lazy val scalacOptions212 = Seq(
   "-Xlint",
   "-Xfuture",
@@ -44,11 +44,11 @@ inThisBuild(List(
 
 val dynverLib = LocalProject("dynver")
 val dynver    = project.settings(
-  libraryDependencies += "org.eclipse.jgit"  % "org.eclipse.jgit" % "5.13.2.202306221912-r" % Test,
-  libraryDependencies += "org.scalacheck"   %% "scalacheck"       % "1.17.0"                % Test,
-  resolvers           += Resolver.sbtPluginRepo("releases"), // for prev artifacts, not repo1 b/c of mergly publishing
+  libraryDependencies += "org.eclipse.jgit"  % "org.eclipse.jgit" % "5.13.3.202401111512-r" % Test,
+  libraryDependencies += "org.scalacheck"   %% "scalacheck"       % "1.18.1"                % Test,
   publishSettings,
-  crossScalaVersions ++= Seq(scala2_13, scala3),
+  crossScalaVersions := Seq(scala2_12, scala2_13, scala3),
+  scripted := (()),
   scalacOptions := {
     scalaBinaryVersion.value match {
       case "3" | "2.13" => scalacOptions.value.filterNot(scalacOptions212.contains(_))
@@ -63,9 +63,11 @@ val sbtdynver = project.dependsOn(dynverLib).enablePlugins(SbtPlugin).settings(
   scriptedDependencies := Seq(dynver / publishLocal, publishLocal).dependOn.value,
   scriptedLaunchOpts   += s"-Dplugin.version=${version.value}",
   scriptedLaunchOpts   += s"-Dsbt.boot.directory=${file(sys.props("user.home")) / ".sbt" / "boot"}",
+  crossScalaVersions   := Seq(scala2_12, scala3),
   (pluginCrossBuild / sbtVersion) := {
     scalaBinaryVersion.value match {
-      case "2.12" => "1.1.0"
+      case "2.12" => "1.3.0"
+      case _ => "2.0.0-M2"
     }
   },
   publishSettings,
@@ -77,6 +79,7 @@ lazy val publishSettings = Def.settings(
   credentials += Credentials(Path.userHome / ".artifactory" / "credentials"),
 )
 
+crossScalaVersions    := Nil
 mimaPreviousArtifacts := Set.empty
 publish / skip        := true
 Global / cancelable      := true
